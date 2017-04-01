@@ -15,7 +15,7 @@ int main(){
 	for (j=0; j < NFORKS; j++){
 		if ((pid = fork()) < 0){
 			printf("no se pudo crear hijo\n");
-			//exit(1);
+			exit(1);
 		}
 
 		if (pid == 0){ // hijo
