@@ -7,35 +7,27 @@
 
 
 void do_nothing(){
-	sleep(1); // 10 second
+	sleep(5); // 10 second
 }
 
 int main(){
-	int pid, j, status;
+	int pid, j=0, status;
 	int pidP; 
-	int NFORKS  = 5;
-	for (j=0; j < NFORKS; j++){
-		pid = fork();
-		pidP = getppid();
-		if(pidP>0 && pid>0)
-		{
-			if ((pid = fork()) < 0)
-			{
-			printf("no se pudo crear hijo\n");
-			exit(1);
-			}
+	int NFORKS  = 3;
+	//pidP = getpid();
 
-			if (pid == 0)
-			{ // hijo
-		    	do_nothing();
-				exit(0);
-			}
-		/*else{ // padre
-			waitpid(pid, &status, 0);
-			printf("%d\n", pid);
-			exit(0);
-		}*/
+	//pid = fork();
+	printf("caca %i\n", pid);
+	while(j<2)
+	{
+		if(pid>0)
+		{
+			pid = fork();
+
+			printf("caca2f %i \n", pid);
+			j++;
 		}
-		
 	}
+	
+	
 }
