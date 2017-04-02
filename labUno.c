@@ -18,14 +18,12 @@ int main(){
 
 	//pid = fork();
 	printf("caca %i\n", pid);
-	while(j<2)
+	while(j<3)
 	{
 		if(pid>0)
 		{
 			pid = fork();
-
 			printf("caca2f %i \n", pid);
-			j++;
 		}
 	}
 	
