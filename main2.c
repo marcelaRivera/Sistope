@@ -8,10 +8,9 @@ int main (int argc, char **argv) {
   int mflag = 0;
   int index;
   int c;
-   int pid=1, j=0, status;
-  int pidP;
+  int pid=1, j=0, status;
   int *arreglo;
-
+  int numeroHijo;
   opterr = 0;
 
   while ((c = getopt (argc, argv, "h:m")) != -1)
@@ -48,40 +47,28 @@ int main (int argc, char **argv) {
   //pidP = getpid();
 
   //pid = fork();
-  printf("caca %i\n", pid);
- arreglo = (int*)malloc(sizeof(int)*hvalue);
   while(j<hvalue)
   {
     if(pid>0)
     {
       pid = fork();
-      printf("pid %i \n", pid);
-      pidP = getpid();
-      arreglo[j] = pidP;
-      printf("k%i \n", arreglo[j]);
-      j++;
+      if(pid == 0){
+	numeroHijo = j+1;
+	printf("%d\n", numeroHijo);
+      }
       
     }
-    else if (pid == 0)
-    {
-      j++;
-      exit(0);
-      break;
+    else if(pid<0){
+      printf("ERROR, FINALIZANDO EJECUCION... \n");
+      exit(1);
     }
-    else
-    {
-      printf("error\n");
-      j++;
-    }
-   // j++;
+    j++;
   }
+  
+  if (mflag==1){
+	  if (pid == 0){
+		  printf("Soy el proceso %i y mi pid es: %i \n", numeroHijo, getpid());
+	  }
+  }
+}
 
-  if(pid>0)
-  {
-  for(j=0; j<hvalue; j++)
-  {
-    printf("soy el proceso %i y mi pid es: %i \n", j, arreglo[j]);
-  }
-  return 0;
-}
-}
