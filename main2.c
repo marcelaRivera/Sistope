@@ -10,8 +10,9 @@ int main (int argc, char **argv) {
   int c;
   int pid=1, j=0, status;
   int cont =0;
-  int numeroHijo, opcion2=0;
-  char opcion[5];
+  int numeroHijo;
+  int hijo;
+  int senal;
   opterr = 0;
 
   while ((c = getopt (argc, argv, "h:m")) != -1)
@@ -42,8 +43,6 @@ int main (int argc, char **argv) {
     fprintf (stderr, "Debe ingresar un argumento valido para h\n");
     return 1;
   }
-  printf("h: %i\n", hvalue );
-
 
   //pidP = getpid();
 
@@ -54,8 +53,7 @@ int main (int argc, char **argv) {
     {
       pid = fork();
       if(pid == 0){
-	numeroHijo = j+1;
-	printf("%d\n", numeroHijo);
+	      numeroHijo = j+1;
       }
       
     }
@@ -72,17 +70,15 @@ int main (int argc, char **argv) {
 	  }
   }
 
-  if(pid>0)
-  {
-    while(cont < 3)
-    {
+  while(1){
+    if (pid>0){
+      sleep(1);
       printf("Ingresar numero de hijo y señal a enviar (X - Y): \n");
-      scanf("%c", &opcion);
-      printf("dfgfd%s\n", opcion);
-      
-      cont++;
+      scanf("%d - %d", &hijo, &senal);
+      if (hijo>hvalue || hijo<=0){
+      	printf("\nNo existe el hijo descrito\n");
+      }
     }
-    
   }
 }
 
