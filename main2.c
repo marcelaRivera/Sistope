@@ -9,8 +9,9 @@ int main (int argc, char **argv) {
   int index;
   int c;
   int pid=1, j=0, status;
-  int *arreglo;
-  int numeroHijo;
+  int cont =0;
+  int numeroHijo, opcion2=0;
+  char opcion[5];
   opterr = 0;
 
   while ((c = getopt (argc, argv, "h:m")) != -1)
@@ -69,6 +70,19 @@ int main (int argc, char **argv) {
 	  if (pid == 0){
 		  printf("Soy el proceso %i y mi pid es: %i \n", numeroHijo, getpid());
 	  }
+  }
+
+  if(pid>0)
+  {
+    while(cont < 3)
+    {
+      printf("Ingresar numero de hijo y señal a enviar (X - Y): \n");
+      scanf("%c", &opcion);
+      printf("dfgfd%s\n", opcion);
+      
+      cont++;
+    }
+    
   }
 }
 
