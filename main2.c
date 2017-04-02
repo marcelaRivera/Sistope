@@ -76,10 +76,12 @@ int main (int argc, char **argv) {
    // j++;
   }
 
-  
+  if(pid>0)
+  {
   for(j=0; j<hvalue; j++)
   {
     printf("soy el proceso %i y mi pid es: %i \n", j, arreglo[j]);
   }
   return 0;
+}
 }
