@@ -70,13 +70,24 @@ int main (int argc, char **argv) {
 	  }
   }
 
-  while(1){
+  while(cont < 2){
     if (pid>0){
       sleep(1);
       printf("Ingresar numero de hijo y señal a enviar (X - Y): \n");
       scanf("%d - %d", &hijo, &senal);
-      if (hijo>hvalue || hijo<=0){
+    if (hijo>hvalue || hijo<=0){
       	printf("\nNo existe el hijo descrito\n");
+      }
+      printf("La señal %i será enviada al hijo %i de pid %i \n", senal, hijo, getpid());
+      cont++;
+
+    }
+    if(pid == 0)
+    {
+      if( hijo == numeroHijo)
+      {
+
+      printf("Soy el hijo %i Y recibi la señal %i \n", getpid(), senal);
       }
     }
   }
