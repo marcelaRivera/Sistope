@@ -6,29 +6,49 @@
 #include <sys/types.h>
 
 int signalReceived = 0;
+int pidGlobal;
 
 void signalHandler(int signal){
+
 	if (signal == SIGUSR1){
 		signalReceived = 1;
 	}
-  if(signal == SIGUSR2)
-  {
-    signalReceived = 2;
-  }
+  	if(signal == SIGUSR2)
+  	{
+    	signalReceived = 2;
+  	}
+  	if(signal == SIGINT){
+  		if (signalReceived == 4){
+  			if(pidGlobal>0){
+  				sleep(1);
+  			}
+  			exit(0);
+  		}
+  		else{
+  			if (pidGlobal>0){
+  				signalReceived = 4;
+  			}
+  			else{
+  				signalReceived = 3;
+  			}
+  		}
+  	}
 }
 
 int main (int argc, char **argv) {
-  int hvalue = 0;
-  int mflag = 0;
-  int index;
-  int c;
-  int pid=1, j=0, status;
-  int signalCounter =0;
-  int numeroHijo;
-  int hijo;
-  int senal=0;
-  int *listadoHijos;
-  opterr = 0;
+
+  	int hvalue = 0;
+  	int mflag = 0;
+  	int index;
+  	int c;
+  	int pid=1, j=0, status;
+  	int signalCounter =0;
+  	int numeroHijo;
+  	int hijo;
+  	int senal=0;
+  	int *listadoHijos;
+  	int ctrlC=0;
+  	opterr = 0;
 
   while ((c = getopt (argc, argv, "h:m")) != -1)
     switch (c)
@@ -64,7 +84,7 @@ int main (int argc, char **argv) {
   //pid = fork();
   signal(SIGUSR1, signalHandler);
   signal(SIGUSR2, signalHandler);
-
+  signal(SIGINT, signalHandler);
   listadoHijos = (int*)malloc(sizeof(int)*hvalue);
   while(j<hvalue)
   {
@@ -92,7 +112,7 @@ int main (int argc, char **argv) {
 		printf("Soy el proceso %i y mi pid es: %i \n", numeroHijo, getpid());
 	  }
   }
-
+  pidGlobal = pid;
   while(1){
     if (pid>0){
       sleep(1);
@@ -107,10 +127,16 @@ int main (int argc, char **argv) {
       	if (senal == 16)
         {
       		kill(listadoHijos[hijo-1], SIGUSR1);
+      		senal = 0;
       	}
         else if (senal == 17)
         {
           kill(listadoHijos[hijo-1], SIGUSR2);
+          senal = 0;
+        }
+        else if (senal == 15){
+        	kill(listadoHijos[hijo-1], SIGTERM);
+    		senal = 0;
         }
       }
     }
@@ -126,8 +152,14 @@ int main (int argc, char **argv) {
     }
     else if(signalReceived == 2)
     {
-      pid = fork();
+      fork();
       signalReceived = 0;
+    }
+    else if (signalReceived == 3){
+    	if (pid == 0){
+    		printf("Soy el hijo con pid: %i y estoy vivo aun\n", getpid());
+    	}
+    	signalReceived = 4;
     }
   }
 }
