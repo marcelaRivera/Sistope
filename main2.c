@@ -6,57 +6,46 @@
 #include <sys/types.h>
 
 
-int signalReceived = 0;//variable que permite identificar el tipo de acción, según la señal ingresada por el usuario
-int pidGlobal;
+int signalReceived = 0;//variable que permite identificar el tipo de acción a realizar, según la señal ingresada por el usuario
 
 /*Entrada: Recibe valor de la señal
-Salida: comportamiento de señales
 Funcion: asignar el comportamiento de las distintas señales */
-void signalHandler(int signal){
+void signalHandler(int senal){
 //Se compara el tipo de señal correspondiente
-	if (signal == SIGUSR1){
+	if (senal == SIGUSR1){
 		signalReceived = 1; //se asigna un valor para la variable global
 	}
-  	if(signal == SIGUSR2)
+  	if(senal == SIGUSR2)
   	{
     	signalReceived = 2;
   	}
-  	if(signal == SIGINT){
-  		if (signalReceived == 4){
-  			if(pidGlobal>0){
-  				sleep(1);
-  			}
-  			exit(0);
-  		}
-  		else{
-  			if (pidGlobal>0){
-  				signalReceived = 4;
-  			}
-  			else{
-  				signalReceived = 3;
-  			}
-  		}
+  	if(senal == SIGINT){
+  		signal(SIGINT, SIG_DFL);
+  		signalReceived = 3;
   	}
 }
 
 
 /* Función que sirve para crear los procesos hijos y permitir la comunicación de señales
-Entrada: cantidad de hijos por crear
-Salida: procesos creados y opción para interactuar enviando señales a los procesos*/
+Entrada: cantidad de hijos por crear y flag para indicar si mostrar o no a los hijos
+Salida: entero que indica si la ejecucion finaliza con error*/
 
 int main (int argc, char **argv) {
 
-  	int hvalue = 0; //parametro de entrada
+  	int hvalue = 0; //numero de hijos (argumento de -h)
   	int mflag = 0; //bandera
   	//int index;
   	int c;
-  	int pid=1/*variable para guardar el pid de los procesos*/, j=0 /*contador*/;
+  	int pid=1/*variable para guardar el pid (retorno de fork) de los procesos*/, j=0 /*contador*/;
   	int signalCounter =0; //contador para almacenar cantidad de veces que ha sido llamada la señal sigurs1
   	int numeroHijo;//variable que representa un contador, el cual permite identificar a un proceso hijo en particular
   	int hijo;//variable que almacena al hijo que se le quiere enviar una señal
   	int senal=0; //tipo de señal a enviar
-  	int *listadoHijos; //arreglo para guardar los pid de cada hijo
-  	int ctrlC=0;
+  	//15 = sigterm
+  	//16 = sigusr1
+  	//17 = sigusr2
+  	int *listadoHijos; //arreglo para guardar los pid de cada hijo en el padre
+
   	opterr = 0;
 
 //el siguiente ciclo se utiliza para recibir los parametros de entrada usando getopt
@@ -90,9 +79,10 @@ int main (int argc, char **argv) {
   }
 
   
-  //se activan las señales
+  //se setean las señales al manejador de señales programado
   signal(SIGUSR1, signalHandler);
   signal(SIGUSR2, signalHandler);
+  //se redirecciona el manejador de la señal proveniente de teclado (ctrl+C)
   signal(SIGINT, signalHandler);
   listadoHijos = (int*)malloc(sizeof(int)*hvalue);
 
@@ -104,7 +94,7 @@ int main (int argc, char **argv) {
       pid = fork(); //se crea un nuevo proceso
       if(pid == 0)//proceso hijo
       {
-	      numeroHijo = j+1; //contador de procesos creados
+	      numeroHijo = j+1; //se identifica el hijo como hijo numero x
       }
       else if (pid>0){ //proceso padre
       	listadoHijos[j] = pid; //almacena pid de hijos
@@ -129,7 +119,7 @@ int main (int argc, char **argv) {
 		printf("Soy el proceso %i y mi pid es: %i \n", numeroHijo, getpid());
 	  }
   }
-  pidGlobal = pid;
+
   while(1)
   {
     if (pid>0) //proceso padre
@@ -189,7 +179,6 @@ int main (int argc, char **argv) {
       {
     		printf("Soy el hijo con pid: %i y estoy vivo aun\n", getpid());
     	}
-    	signalReceived = 4;
     }
   }
 }
