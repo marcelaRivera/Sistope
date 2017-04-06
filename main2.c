@@ -4,9 +4,10 @@
 #include <unistd.h>
 #include <signal.h>
 #include <sys/types.h>
+#include <sys/wait.h>
 
 
-int signalReceived = 0;//variable que permite identificar el tipo de acción a realizar, según la señal ingresada por el usuario
+int signalReceived = 0;//variable global que permite identificar el tipo de acción a realizar, según la señal ingresada por el usuario
 
 /*Entrada: Recibe valor de la señal
 Funcion: asignar el comportamiento de las distintas señales */
@@ -73,7 +74,7 @@ int main (int argc, char **argv) {
         abort ();
       }
 
-  if (hvalue == 0){
+  if (hvalue <= 0){
     fprintf (stderr, "Debe ingresar un argumento valido para h\n");
     return 1;
   }
@@ -82,6 +83,7 @@ int main (int argc, char **argv) {
   //se setean las señales al manejador de señales programado
   signal(SIGUSR1, signalHandler);
   signal(SIGUSR2, signalHandler);
+  signal(SIGCHLD, SIG_IGN);
   //se redirecciona el manejador de la señal proveniente de teclado (ctrl+C)
   signal(SIGINT, signalHandler);
   listadoHijos = (int*)malloc(sizeof(int)*hvalue);
@@ -179,6 +181,7 @@ int main (int argc, char **argv) {
       {
     		printf("Soy el hijo con pid: %i y estoy vivo aun\n", getpid());
     	}
+      signalReceived = 0;
     }
   }
 }
